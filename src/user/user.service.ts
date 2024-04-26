@@ -11,6 +11,7 @@ import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginUserDto } from './dto/user-login.dto';
+import { Role } from 'src/enum/role.enum';
 
 @Injectable()
 export class UserService {
@@ -72,10 +73,12 @@ export class UserService {
     }
     return user;
   }
-  async login(userLogin: LoginUserDto): Promise<any> {
-    const user = await this.validateUser(userLogin.email, userLogin.password);
-    const token = this.authService.generateJWT(user);
-    delete user.password;
-    return { user, access_toke: token };
+  async updateRoleOfUser(id: number, userRole: Role) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User Not Found');
+    }
+    user.role = userRole;
+    return this.userRepository.save(user);
   }
 }

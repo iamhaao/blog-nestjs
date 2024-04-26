@@ -13,6 +13,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { LoginUserDto } from './dto/user-login.dto';
+import { Public, Roles } from 'src/decorator/role.decorator';
+import { Role } from 'src/enum/role.enum';
 
 @Controller('users')
 export class UserController {
@@ -23,10 +25,7 @@ export class UserController {
     return await this.userService.create(createUserDto);
   }
 
-  @Post('login')
-  async login(@Body() loginDto: LoginUserDto): Promise<any> {
-    return await this.userService.login(loginDto);
-  }
+  @Public()
   @Get()
   async findAll(): Promise<UserEntity[]> {
     return await this.userService.findAll();
@@ -48,5 +47,14 @@ export class UserController {
   @Delete(':id')
   async deleteOne(@Param('id') id: string): Promise<any> {
     return await this.userService.deleteOne(+id);
+  }
+
+  @Public()
+  @Put(':id/role')
+  async updateRoleOfUser(
+    @Param('id') id: string,
+    @Body('role') role: Role,
+  ): Promise<UserEntity> {
+    return await this.userService.updateRoleOfUser(+id, role);
   }
 }

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Put,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -27,8 +28,11 @@ export class UserController {
 
   @Public()
   @Get()
-  async findAll(): Promise<UserEntity[]> {
-    return await this.userService.findAll();
+  async index(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ): Promise<any> {
+    return await this.userService.paginate(+page, +limit);
   }
 
   @Get(':id')

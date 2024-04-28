@@ -32,8 +32,19 @@ export class UserService {
     }
   }
 
-  async findAll(): Promise<UserEntity[]> {
-    return await this.userRepository.find();
+  async paginate(page: number, limit: number): Promise<any> {
+    const [users, total] = await this.userRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const totalPage = Math.ceil(total / limit);
+    // Remove password field from each user object
+    const usersWithoutPassword = users.map((user) => {
+      delete user.password;
+      return user;
+    });
+    return { users, limit, totalPage, total, page };
   }
   async findOne(id: number): Promise<UserEntity> {
     const user = await this.userRepository.findOne({ where: { id } });
